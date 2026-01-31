@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: polaris-local
+
+resources:
+  - ../../base/postgres-paradedb
+  - ../../base/redis
+  - namespace.yaml
+
+# Local development patches
+patches:
+  # Reduce resource requirements for local development
+  - patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: postgres
+      spec:
+        template:
+          spec:
+            containers:
+              - name: postgres
+                resources:
+                  requests:
+                    memory: "128Mi"
+                    cpu: "50m"
+                  limits:
+                    memory: "512Mi"
+                    cpu: "500m"
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 1Gi
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: redis
+      spec:
+        template:
+          spec:
+            containers:
+              - name: redis
+                resources:
+                  requests:
+                    memory: "32Mi"
+                    cpu: "25m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "250m"
+
+# Override secret for local development
+secretGenerator:
+  - name: postgres-credentials
+    behavior: replace
+    literals:
+      - POSTGRES_DB=polaris
+      - POSTGRES_USER=polaris
+      - POSTGRES_PASSWORD=polaris
