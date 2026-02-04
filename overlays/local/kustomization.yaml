@@ -1,12 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: polaris-local
+namespace: default
 
 resources:
-  - ../../base/postgres-paradedb
+  - ../../base/postgres
   - ../../base/redis
-  - namespace.yaml
+
+# ConfigMap for postgres init scripts
+configMapGenerator:
+  - name: postgres-init-scripts
+    files:
+      - init-db.sql
 
 # Local development patches
 patches:
@@ -59,6 +64,6 @@ secretGenerator:
   - name: postgres-credentials
     behavior: replace
     literals:
-      - POSTGRES_DB=polaris
-      - POSTGRES_USER=polaris
-      - POSTGRES_PASSWORD=polaris
+      - POSTGRES_DB=dummy
+      - POSTGRES_USER=incident
+      - POSTGRES_PASSWORD=incident
