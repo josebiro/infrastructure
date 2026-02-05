@@ -43,7 +43,7 @@ patches:
                   storage: 1Gi
   - patch: |-
       apiVersion: apps/v1
-      kind: Deployment
+      kind: StatefulSet
       metadata:
         name: redis
       spec:
@@ -53,11 +53,19 @@ patches:
               - name: redis
                 resources:
                   requests:
-                    memory: "32Mi"
-                    cpu: "25m"
+                    memory: "256Mi"
+                    cpu: "50m"
                   limits:
-                    memory: "128Mi"
-                    cpu: "250m"
+                    memory: "512Mi"
+                    cpu: "500m"
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 2Gi
 
 # Override secret for local development
 secretGenerator:

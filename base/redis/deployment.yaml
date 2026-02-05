@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: redis
 spec:
+  serviceName: redis
   replicas: 1
   selector:
     matchLabels:
@@ -15,6 +16,12 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          command:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --appendfsync
+            - everysec
           ports:
             - containerPort: 6379
               name: redis
@@ -25,6 +32,9 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
+          volumeMounts:
+            - name: data
+              mountPath: /data
           livenessProbe:
             exec:
               command:
@@ -43,3 +53,11 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
