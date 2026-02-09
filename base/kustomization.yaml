@@ -3,5 +3,5 @@ kind: Kustomization
 
 # Include all base resources
 resources:
-  - postgres-paradedb
+  - postgres
   - redis

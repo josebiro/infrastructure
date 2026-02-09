@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Set namespace for all resources
+namespace: polaris-dev
+
+# Include base configurations
+resources:
+  - ../../base/postgres
+  - ../../base/redis
+
+# Strategic merge patches for dev environment
+patches:
+  - path: postgres-patch.yaml
+    target:
+      kind: StatefulSet
+      name: postgres
+  - path: redis-patch.yaml
+    target:
+      kind: StatefulSet
+      name: redis
+  - path: init-configmap.yaml
+    target:
+      kind: ConfigMap
+      name: init-scripts
+
+# Add environment-specific labels
+labels:
+  - pairs:
+      environment: dev
+      managed-by: kustomize
+    includeSelectors: false
