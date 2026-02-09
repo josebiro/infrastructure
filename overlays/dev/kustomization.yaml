@@ -19,10 +19,6 @@ patches:
     target:
       kind: StatefulSet
       name: redis
-  - path: init-configmap.yaml
-    target:
-      kind: ConfigMap
-      name: init-scripts
 
 # Add environment-specific labels
 labels:
