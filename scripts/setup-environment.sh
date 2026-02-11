@@ -75,6 +75,7 @@ REQUIRED_APIS=(
     "iamcredentials.googleapis.com"     # Workload Identity
     "cloudresourcemanager.googleapis.com" # Resource management
     "sts.googleapis.com"                # Security Token Service for WIF
+    "aiplatform.googleapis.com"         # Vertex AI (embeddings, LLM)
 )
 
 for api in "${REQUIRED_APIS[@]}"; do

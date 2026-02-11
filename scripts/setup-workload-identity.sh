@@ -168,6 +168,16 @@ POLARIS_SA="polaris${SUFFIX}@${PROJECT_ID}.iam.gserviceaccount.com"
 echo "  Granting storage.objectViewer to $POLARIS_SA for gs://$GCS_BUCKET..."
 gsutil iam ch "serviceAccount:${POLARIS_SA}:objectViewer" "gs://$GCS_BUCKET"
 
+# 7. Grant Vertex AI permissions to polaris service account (embeddings + LLM)
+echo ""
+echo "Granting Vertex AI permissions to polaris service account..."
+echo "  Granting roles/aiplatform.user to $POLARIS_SA..."
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$POLARIS_SA" \
+    --role="roles/aiplatform.user" \
+    --condition=None \
+    --quiet > /dev/null
+
 echo ""
 echo "=========================================="
 echo "Workload Identity setup complete!"
